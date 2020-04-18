@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #box {
+            margin: 50px auto;
+            width: 800px;
+            height: 800px;
+            border: 1px solid black;
+            position: relative;
+            background: black;
+        }
+
+        .boxs {
+            width: 200px;
+            height: 200px;
+            background: url(bg.jpg);
+            position: absolute;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="box">
+
+    </div>
+</body>
+<script>
+    var position_list = []
+    var r = random(15)
+    var box = document.querySelector("#box");
+    for (var i = 0; i < 4; i++) {
+
+        for (var j = 0; j < 4; j++) {
+
+            var boxs = document.createElement("div")
+            boxs.className = "boxs"
+            box.appendChild(boxs)
+            position_list.push({
+                left: j * 200,
+                top: i * 200,
+                index: i * 4 + j
+            })
+            boxs.style.backgroundPosition = -j * 200 + "px " + (-i * 200) + "px";
+            if (i * 4 + j == 15) {
+                boxs.style.background = "none";
+                boxs.id = "empty_node";
+                
+            }
+        }
+
+    }
+    console.log(position_list);
+
+    function random(a) {
+        return Math.floor(Math.random() * (a + 1))
+    }
+    for (var i = 0; i < box.children.length; i++) {
+        var ran = random(position_list.length - 1);
+        box.children[i].style.top = position_list[ran].top + "px"
+        box.children[i].style.left = position_list[ran].left + "px"
+        box.children[i].position_index = position_list[ran].index;
+
+        // 防止堆叠 用完删除位置信息
+        position_list.splice(ran, 1);
+    }
+
+
+
+    for (var i = 0; i < box.children.length; i++) {
+
+        box.children[i].onclick = function () {
+
+            // 获取当前点击元素的left、top
+            var self_left = parseInt(this.style.left)
+            var self_top = parseInt(this.style.top)
+
+            // 获取空元素left、top
+            var empty_node_left = parseInt(empty_node.style.left)
+            var empty_node_top = parseInt(empty_node.style.top)
+
+            // 上下相邻
+            if (self_left == empty_node_left && (self_top + 200 == empty_node_top || self_top - 200 == empty_node_top)) {
+
+                this.style.top = empty_node_top + "px";
+                empty_node.style.top = self_top + "px";
+                var index = this.position_index;
+                this.position_index = empty_node.position_index;
+                empty_node.position_index = index;
+
+                check();
+
+            }
+
+            // 左右相邻
+            if (self_top == empty_node_top && (self_left + 200 == empty_node_left || self_left - 200 == empty_node_left)) {
+
+                this.style.left = empty_node_left + "px";
+                empty_node.style.left = self_left + "px";
+                var index = this.position_index;
+                this.position_index = empty_node.position_index;
+                empty_node.position_index = index;
+
+                check();
+
+            }
+
+        }
+
+    }
+
+
+
+    // 成功验证
+    // 遍历16个元素   在DOM结构中的编号 是否跟位置编号保持一致
+    function check() {
+        var num = 0;
+        for (var i = 0; i < box.children.length; i++) {
+
+            if (box.children[i].position_index == i) {
+                num++;
+            } else {
+                // console.log(i, "不正确")
+            }
+
+        }
+        console.log(num)
+        if (num == 16) {
+            console.log("拼图成功")
+        }
+
+    }
+    document.addEventListener("keyup", function (e) {
+        // 上
+        if (e.which == 38) {
+            console.log(top);
+            for (var i = 0; i < box.children.length; i++) {
+                var en_top = parseInt(box.children[i].style.top)
+                var en_left = parseInt(box.children[i].style.left)
+                if (parseInt(empty_node.style.top) == en_top+200 && parseInt(empty_node.style.left)== en_left) { 
+                    empty_node.style.top=en_top+"px"
+                    box.children[i].style.top = en_top + 200+ "px"
+                    
+                }
+             
+            }
+
+        }
+        // 下
+        if (e.which == 40) {
+            for (var i = 0; i < box.children.length; i++) {
+                var en_top = parseInt(box.children[i].style.top)
+                var en_left = parseInt(box.children[i].style.left)
+                if (parseInt(empty_node.style.top) == en_top-200 && parseInt(empty_node.style.left)== en_left) { 
+                    empty_node.style.top=en_top+"px"
+                    box.children[i].style.top = en_top - 200+ "px"
+                    
+                }
+             
+            }
+        }
+        // 左
+        if (e.which == 37) {
+            for (var i = 0; i < box.children.length; i++) {
+                var en_top = parseInt(box.children[i].style.top)
+                var en_left = parseInt(box.children[i].style.left)
+                if (parseInt(empty_node.style.left) == en_left+200 && parseInt(empty_node.style.top)== en_top) { 
+                    empty_node.style.left=en_left+"px"
+                    box.children[i].style.left = en_left + 200+ "px"
+                    
+                }
+             
+            }
+        }
+        // 右
+        if (e.which == 39) {
+            for (var i = 0; i < box.children.length; i++) {
+                var en_top = parseInt(box.children[i].style.top)
+                var en_left = parseInt(box.children[i].style.left)
+                if (parseInt(empty_node.style.left) == en_left-200 && parseInt(empty_node.style.top)== en_top) { 
+                    empty_node.style.left=en_left+"px"
+                    box.children[i].style.left = en_left - 200+ "px"
+                    
+                }
+             
+            }
+        }
+        check();
+    })
+</script>
+
+</html>
